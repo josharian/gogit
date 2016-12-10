@@ -27,13 +27,12 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
 	"sort"
 	"sync"
-
-	"github.com/speedata/mmap-go"
 )
 
 // A Repository is the base of all other actions. If you need to lookup a
@@ -79,7 +78,7 @@ type idxFile struct {
 
 	fanoutTable [256]int64
 
-	// These tables are sub-slices of the whole idx file as an mmap
+	// These tables are sub-slices of the whole idx file as a byte slice
 	shaTable     []byte
 	offsetTable  []byte
 	offset8Table []byte
@@ -89,13 +88,10 @@ func readIdxFile(path string) (*idxFile, error) {
 	ifile := &idxFile{}
 	ifile.packpath = path[0:len(path)-3] + "pack"
 
-	idxf, err := os.Open(path)
+	idxMmap, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
-	defer idxf.Close()
-	idxMmap, err := mmap.Map(idxf, mmap.RDONLY, 0)
-
 	if err != nil {
 		return nil, err
 	}
