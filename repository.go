@@ -367,7 +367,9 @@ func readObjectBytes(path string, offset uint64, sizeonly bool) (ot ObjectType, 
 		pos = pos + 1
 	case 0x70:
 		// DELTA_ENCODED object w/ base BINARY_OBJID
-		log.Fatal("not implemented yet")
+		err = errors.New("not implemented yet")
+		return
+		// log.Fatal("not implemented yet")
 	}
 	var base []byte
 	ot, _, base, err = readObjectBytes(path, baseObjectOffset, false)
